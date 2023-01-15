@@ -12,6 +12,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] float _distanceFromPlayer;
     [SerializeField] float _totalEnemiesPerWave;
     [SerializeField] GameObject _player;
+    List<Enemy> _enemies = new List<Enemy>();
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +30,17 @@ public class EnemyManager : MonoBehaviour
         }
 
      
-           
+        foreach(Enemy enemy in _enemies)
+        {
+            List<Transform> context = GetNearbyObjects(enemy);
+
+            //Debugging avoidance radius : red too nearby enemy, white 0 nearby enemy
+            SpriteRenderer[] renderers = enemy.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer rend in renderers)
+            {
+                rend.color = Color.Lerp(Color.white, Color.red, context.Count / 6f);
+            }
+        } 
        
         
         //SpawnWave();
@@ -44,9 +55,22 @@ public class EnemyManager : MonoBehaviour
 
     }
 
-    private void CheckCollision()
+    /// <summary>
+    ///  Search for nearby enemies
+    /// </summary>
+    /// <returns></returns>
+    private List<Transform> GetNearbyObjects(Enemy enemy)
     {
-        throw new NotImplementedException();
+        List<Transform> context = new List<Transform>();
+        Collider2D[] contextColliders = Physics2D.OverlapCircleAll(enemy.transform.position, enemy.AvoidanceRadius);
+        foreach (Collider2D c in contextColliders)
+        {
+            if (c != enemy.EnemyCollider)
+            {
+                context.Add(c.transform);
+            }
+        }
+        return context;
     }
 
     private void SpawnWave()
@@ -58,8 +82,10 @@ public class EnemyManager : MonoBehaviour
     {
         Debug.Log("Enemy number" + Enemy.Enemycount);
         Vector3 desiredPos = UnityEngine.Random.insideUnitCircle * 40;
-        Enemy enemy = Instantiate(_simpleEnemyPrefab, _player.transform.position * UnityEngine.Random.insideUnitCircle * 40, Quaternion.identity);
-        enemy.Setup();
+        Enemy enemy = Instantiate(_simpleEnemyPrefab, _player.transform.position * UnityEngine.Random.insideUnitCircle * 5, Quaternion.identity);
+        enemy.name = "Enemy" + Enemy.Enemycount;
+        enemy.Setup(_player);
+        _enemies.Add(enemy);
         
     }
 }
