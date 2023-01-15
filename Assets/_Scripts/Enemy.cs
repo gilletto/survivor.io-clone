@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
+    public static int Enemycount = 0;
     [SerializeField] float _speed = 1.0f;
     [SerializeField] float _health = 1.0f;
     private GameObject _target;
@@ -15,9 +16,10 @@ public class Enemy : MonoBehaviour
     {
         _target = GameObject.FindGameObjectWithTag("Player");
     }
-    void Start()
+  
+    public void Setup()
     {
-        _target = GameObject.FindGameObjectWithTag("Player");
+        Enemycount += 1;
 
     }
 
@@ -45,6 +47,7 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        Enemycount--;
         Destroy(gameObject);
     }
 }
