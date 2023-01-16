@@ -1102,5 +1102,9 @@ PrefabInstance:
       propertyPath: _health
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 824816009764987434, guid: 2ab8321fe1cca3049b56c26509622067, type: 3}
+      propertyPath: _avoidanceRadius
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ab8321fe1cca3049b56c26509622067, type: 3}
