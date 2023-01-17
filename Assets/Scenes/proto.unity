@@ -543,7 +543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spawnRate: 5
-  _simpleEnemyPrefab: {fileID: 8124971262309440186, guid: e1137c74dec04684581772e0152cd8ba, type: 3}
+  _simpleEnemyPrefab: {fileID: 7866708910509320931, guid: 84e48554d92e6314baf127ea00a6f7fc, type: 3}
   _distanceFromPlayer: 0
   _totalEnemiesPerWave: 0
   _player: {fileID: 594778476}

@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float _avoidanceRadius = 1.0f;
     private Collider2D _collider;
     private GameObject _target;
+    private Rigidbody2D _rb2d;
 
     public Vector3 _avoidanceDirection;
     public Collider2D EnemyCollider { get { return _collider; } }
@@ -30,6 +31,7 @@ public class Enemy : MonoBehaviour
 
         _target = player;
         _collider = GetComponent<Collider2D>();
+        _rb2d = GetComponent<Rigidbody2D>();
 
     }
 
@@ -45,27 +47,10 @@ public class Enemy : MonoBehaviour
     void Update()
     {
 
-        ApplyAvoidenceMovement();
-        MoveTowardsTarget();
+        //ApplyAvoidenceMovement();
+       
     }
 
-    /// <summary>
-    /// Move object towards a target(es.player)
-    /// </summary>
-    private void MoveTowardsTarget()
-    {
-        // Move toward target(player) if distance is less then 0.001
-        if (Vector2.Distance(_target.transform.position, transform.position) > 0.001f)
-        {
-            // move enemy near player
-            transform.position -= (transform.position - _target.transform.position).normalized * _speed * Time.deltaTime;
-
-
-            // OLD : Move our position a step closer to the target. 
-            //var step = _speed * Time.deltaTime; // calculate distance to move
-            //transform.position = Vector3.MoveTowards(transform.position - _avoidanceDirection, _target.transform.position, step);
-        }
-    }
 
     /// <summary>
     /// Apply avoidence movement
@@ -105,13 +90,17 @@ public class Enemy : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Show avoidance circle
-    /// </summary>
-    private void OnDrawGizmosSelected()
+    private void FixedUpdate()
     {
-        Gizmos.color = Color.red;
-     //Use the same vars you use to draw your Overlap SPhere to draw your Wire Sphere.
-     Gizmos.DrawWireSphere(transform.position, _avoidanceRadius);
+        if (Vector2.Distance(_target.transform.position, transform.position) > 1f)
+        {
+            //OLD move enemy near player
+            //transform.position -= (transform.position - _target.transform.position).normalized * _speed * Time.deltaTime;
+
+            Vector2 newPosition = Vector2.MoveTowards(transform.position, _target.transform.position, Time.deltaTime * _speed);
+            _rb2d.MovePosition(newPosition);
+
+        }
     }
+
 }

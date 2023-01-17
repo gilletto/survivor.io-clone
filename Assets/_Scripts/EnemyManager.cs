@@ -30,44 +30,44 @@ public class EnemyManager : MonoBehaviour
         }
 
         // search for nearby enemies
-        foreach(Enemy enemy in _enemies)
-        {
-            List<Transform> context = GetNearbyObjects(enemy);
+        //foreach(Enemy enemy in _enemies)
+        //{
+        //    List<Transform> context = GetNearbyObjects(enemy);
 
-            //Debugging avoidance radius : red too nearby enemy, white 0 nearby enemy
-            SpriteRenderer[] renderers = enemy.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer rend in renderers)
-            {
-                rend.color = Color.Lerp(Color.white, Color.red, context.Count / 6f);
-            }
+        //    //Debugging avoidance radius : red too nearby enemy, white 0 nearby enemy
+        //    SpriteRenderer[] renderers = enemy.GetComponentsInChildren<SpriteRenderer>();
+        //    foreach (SpriteRenderer rend in renderers)
+        //    {
+        //        rend.color = Color.Lerp(Color.white, Color.red, context.Count / 6f);
+        //    }
 
-            Vector2 avoidanceMovement = Vector2.zero;
-            int nAvoid = 0;
+        //    Vector2 avoidanceMovement = Vector2.zero;
+        //    int nAvoid = 0;
 
-            foreach(Transform item in context)
-            {
-                // check if enemy is inside avoidanceCircle
-                if (Vector2.SqrMagnitude(item.position - enemy.transform.position) < enemy.AvoidanceRadius){
-                    // add  number of element to avoid
-                    // get direction from nearby enemy or enemies
-                    // invert direction
-                    // set movement
-                    nAvoid++;
-                    var directionToNearbyEnemy = item.position - enemy.transform.position;
-                    var inverseDirection = -directionToNearbyEnemy;
-                    avoidanceMovement += (Vector2)inverseDirection;
-                }
+        //    foreach(Transform item in context)
+        //    {
+        //        // check if enemy is inside avoidanceCircle
+        //        if (Vector2.SqrMagnitude(item.position - enemy.transform.position) < enemy.AvoidanceRadius){
+        //            // add  number of element to avoid
+        //            // get direction from nearby enemy or enemies
+        //            // invert direction
+        //            // set movement
+        //            nAvoid++;
+        //            var directionToNearbyEnemy = item.position - enemy.transform.position;
+        //            var inverseDirection = -directionToNearbyEnemy;
+        //            avoidanceMovement += (Vector2)inverseDirection;
+        //        }
          
-            }
-            // divide movement by number of element to avoid to get smooth movement
-            if(nAvoid > 0)
-            {
-                avoidanceMovement /= nAvoid;
-            }
-            // set enemy avoidance movement
-            enemy.SetAvoidance(avoidanceMovement);
+        //    }
+        //    // divide movement by number of element to avoid to get smooth movement
+        //    if(nAvoid > 0)
+        //    {
+        //        avoidanceMovement /= nAvoid;
+        //    }
+        //    // set enemy avoidance movement
+        //    enemy.SetAvoidance(avoidanceMovement);
        
-        }
+        //}
 
         // compute number of enemies to spawn
         //SpawnWave();
