@@ -46,8 +46,12 @@ public class EnemyManager : MonoBehaviour
 
             foreach(Transform item in context)
             {
-                // get direction from nearby enemy
-                if (Vector2.SqrMagnitude(item.position - enemy.transform.position) < 2f){
+                // check if enemy is inside avoidanceCircle
+                if (Vector2.SqrMagnitude(item.position - enemy.transform.position) < enemy.AvoidanceRadius){
+                    // add  number of element to avoid
+                    // get direction from nearby enemy or enemies
+                    // invert direction
+                    // set movement
                     nAvoid++;
                     var directionToNearbyEnemy = item.position - enemy.transform.position;
                     var inverseDirection = -directionToNearbyEnemy;
@@ -55,27 +59,18 @@ public class EnemyManager : MonoBehaviour
                 }
          
             }
+            // divide movement by number of element to avoid to get smooth movement
             if(nAvoid > 0)
             {
                 avoidanceMovement /= nAvoid;
             }
+            // set enemy avoidance movement
             enemy.SetAvoidance(avoidanceMovement);
-            // compute direction away from enemies
-            // loop each founded enemy and get position
-            // calculate trajectory or direction of movement
-            // add inverse direction to reach inner avoidance radius distance
-            // return to standard target direction
-        } 
        
-        
-        //SpawnWave();
+        }
+
         // compute number of enemies to spawn
-
-        // align enemies
-
-        // compute random position
-
-        // instantiate simple enemies away from player
+        //SpawnWave();
 
 
     }

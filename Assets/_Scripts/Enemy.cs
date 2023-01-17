@@ -18,6 +18,11 @@ public class Enemy : MonoBehaviour
     public float AvoidanceRadius { get { return _avoidanceRadius; } }
     
 
+
+    /// <summary>
+    /// Init method
+    /// </summary>
+    /// <param name="player"></param>
     public void Setup(GameObject player)
     {
         //keep trace of enemy number
@@ -28,6 +33,10 @@ public class Enemy : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Set avoidance direction
+    /// </summary>
+    /// <param name="avoidance"></param>
     public void SetAvoidance(Vector2 avoidance)
     {
         _avoidanceDirection = avoidance;
@@ -36,24 +45,39 @@ public class Enemy : MonoBehaviour
     void Update()
     {
 
-        // Move toward target(player)
+        ApplyAvoidenceMovement();
+        MoveTowardsTarget();
+    }
 
-
-        transform.position += _avoidanceDirection * (_speed * 1.5f)* Time.deltaTime;
-
+    /// <summary>
+    /// Move object towards a target(es.player)
+    /// </summary>
+    private void MoveTowardsTarget()
+    {
+        // Move toward target(player) if distance is less then 0.001
         if (Vector2.Distance(_target.transform.position, transform.position) > 0.001f)
         {
+            // move enemy near player
             transform.position -= (transform.position - _target.transform.position).normalized * _speed * Time.deltaTime;
 
 
-            // Move our position a step closer to the target.
+            // OLD : Move our position a step closer to the target. 
             //var step = _speed * Time.deltaTime; // calculate distance to move
             //transform.position = Vector3.MoveTowards(transform.position - _avoidanceDirection, _target.transform.position, step);
         }
     }
 
+    /// <summary>
+    /// Apply avoidence movement
+    /// </summary>
+    private void ApplyAvoidenceMovement()
+    {
+        // speed up movement to avoid overlapped object
+        transform.position += _avoidanceDirection * (_speed * 1.5f) * Time.deltaTime;
+    }
 
-   
+
+
 
     /// <summary>
     /// Simple damage method
