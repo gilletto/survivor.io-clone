@@ -71,12 +71,12 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float amount)
     {
         Debug.Log("Take damage");
-        if(_health <= 0)
+        _health -= amount;
+        if (_health <= 0)
         {
             Die();
             return;
         }
-        _health -= amount;
     }
 
 

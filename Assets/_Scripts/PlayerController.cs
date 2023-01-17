@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,11 +8,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _speed = 5.0f;
     [SerializeField] private float _health = 1f;
-    [SerializeField] private float _stamina = 1f;
-    [SerializeField] private float _defence = 0f;
     [SerializeField] private GameObject _projectilePrefab;
+    [SerializeField] private float _fireRate = 3f;
     [SerializeField] private LayerMask _enemyLayer;
     private Vector3 _movementDirection;
+    private float _nextFireTime = 3f;
 
 
     private float _horizontal;
@@ -25,57 +26,92 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Move();
+        Fire();
+    }
+
+    private void Fire()
+    {
+        // check if we can fire
+        if(_nextFireTime > Time.time) return;
+        // reset next fire time
+        _nextFireTime = Time.time + _fireRate;
+
+        // compute direction of projectile
+        var nearest = ComputeProjectileDirection(1f);
+        _movementDirection = (nearest.position - transform.position);
+
+        // cast ray for enemy hit
+        RaycastHit2D raycasthit = Physics2D.Raycast(transform.position + _movementDirection.normalized, _movementDirection.normalized, 100f, _enemyLayer);
+        
+        // if we hit enemy
+        if (raycasthit.collider != null)
+        {
+
+            Debug.Log("projectile hit!" + raycasthit.collider.gameObject.name);
+
+            // Damage enemy
+            Enemy enemy = raycasthit.collider.GetComponent<Enemy>();
+            enemy?.TakeDamage(10f);
+
+            // instantiate projectile
+            GameObject projectile = Instantiate(_projectilePrefab, transform.position + _movementDirection.normalized, Quaternion.identity);
+            Projectile projectile_script = projectile.GetComponent<Projectile>();
+
+            // setup projectile variables(direction and speed)
+            projectile_script.Setup(_movementDirection.normalized, 20.0f);
+        }
+        else
+        {
+            GameObject projectile = Instantiate(_projectilePrefab, transform.position + _movementDirection.normalized, Quaternion.identity);
+            Projectile projectile_script = projectile.GetComponent<Projectile>();
+
+            // setup variables
+            projectile_script.Setup(_movementDirection.normalized, 20.0f);
+        }
+
+    }
+
+    private Transform ComputeProjectileDirection(float radius)
+    {
+        var rad = radius;
+        // Get all enemies inside OverlapCircleAll  and return the nearest
+        Transform  nearest;
+        float tempDistance = 0;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius, _enemyLayer);
+        if (colliders.Length > 0)
+        {
+            nearest = colliders[0].transform;
+            tempDistance = Vector3.Distance(nearest.position, transform.position);
+            foreach (Collider2D item in colliders)
+            {
+                var dist = Vector3.Distance(nearest.position, transform.position);
+                if (dist < tempDistance)
+                {
+                    nearest = item.transform;
+                    tempDistance = dist;
+                }
+            }
+            Debug.Log("Nearest enemy is " + nearest.name);
+            return nearest;
+        }
+        else
+        {
+            rad++;
+            return ComputeProjectileDirection(rad);
+        }
+        return null;
+    }
+
+    private void Move()
+    {
+        // Get input from player
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
 
-        // direction for simple projectile trajectory
-        _movementDirection = new Vector3(_horizontal, _vertical, 0);
-
-        // if we are not moving, take orientation
-        if (_movementDirection.normalized == Vector3.zero)
-        {
-
-            _movementDirection = transform.localScale.x < 0 ? transform.right : -transform.right;
-        }
-
-        // shoot simple directional projectile
-        if (Input.GetKeyDown(KeyCode.Space)){
-
-            //instantiate projectile
-            RaycastHit2D raycasthit = Physics2D.Raycast(transform.position + _movementDirection.normalized, _movementDirection.normalized, 100f, _enemyLayer);
-            if (raycasthit.collider != null)
-            {
-
-                Debug.Log("projectile hit!" + raycasthit.collider.gameObject.name);
-                Enemy enemy = raycasthit.collider.GetComponent<Enemy>();
-                enemy?.TakeDamage(2f);
-                GameObject projectile = Instantiate(_projectilePrefab, transform.position + _movementDirection.normalized, Quaternion.identity);
-                Projectile projectile_script = projectile.GetComponent<Projectile>();
-
-                // setup variables
-                projectile_script.Setup(_movementDirection.normalized, 20.0f);
-            }
-            else
-            {
-                GameObject projectile = Instantiate(_projectilePrefab, transform.position + _movementDirection.normalized, Quaternion.identity);
-                Projectile projectile_script = projectile.GetComponent<Projectile>();
-
-                // setup variables
-                projectile_script.Setup(_movementDirection.normalized, 20.0f);
-            }
-
-
-
-            // raycast check
-
-
-        }
-    }
-
-    private void FixedUpdate()
-    {
+        // set movement direction
         Vector2 movement = new Vector3(_horizontal, _vertical, 0);
-       
+
 
         // invert direction based on input
         if (_horizontal > 0)
@@ -88,6 +124,6 @@ public class PlayerController : MonoBehaviour
         }
 
         // move player
-        transform.Translate(movement *  _speed * Time.deltaTime);
+        transform.Translate(movement * _speed * Time.deltaTime);
     }
 }
