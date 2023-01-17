@@ -22,14 +22,14 @@ public class EnemyManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // spawn a fixed number of enemy
         while (Enemy.Enemycount < 10)
         {
             Debug.Log("Enemy count" + Enemy.Enemycount);
             SpawnEnemy();
         }
 
-     
+        // search for nearby enemies
         foreach(Enemy enemy in _enemies)
         {
             List<Transform> context = GetNearbyObjects(enemy);
@@ -40,6 +40,31 @@ public class EnemyManager : MonoBehaviour
             {
                 rend.color = Color.Lerp(Color.white, Color.red, context.Count / 6f);
             }
+
+            Vector2 avoidanceMovement = Vector2.zero;
+            int nAvoid = 0;
+
+            foreach(Transform item in context)
+            {
+                // get direction from nearby enemy
+                if (Vector2.SqrMagnitude(item.position - enemy.transform.position) < 2f){
+                    nAvoid++;
+                    var directionToNearbyEnemy = item.position - enemy.transform.position;
+                    var inverseDirection = -directionToNearbyEnemy;
+                    avoidanceMovement += (Vector2)inverseDirection;
+                }
+         
+            }
+            if(nAvoid > 0)
+            {
+                avoidanceMovement /= nAvoid;
+            }
+            enemy.SetAvoidance(avoidanceMovement);
+            // compute direction away from enemies
+            // loop each founded enemy and get position
+            // calculate trajectory or direction of movement
+            // add inverse direction to reach inner avoidance radius distance
+            // return to standard target direction
         } 
        
         

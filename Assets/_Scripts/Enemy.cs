@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
     private Collider2D _collider;
     private GameObject _target;
 
+    public Vector3 _avoidanceDirection;
     public Collider2D EnemyCollider { get { return _collider; } }
     public float AvoidanceRadius { get { return _avoidanceRadius; } }
     
@@ -27,18 +28,28 @@ public class Enemy : MonoBehaviour
 
     }
 
+    public void SetAvoidance(Vector2 avoidance)
+    {
+        _avoidanceDirection = avoidance;
+    }
     // Update is called once per frame
     void Update()
     {
 
         // Move toward target(player)
 
-        //if(Vector2.Distance(_target.transform.position, transform.position) > 0.001f)
-        //{
-        //    // Move our position a step closer to the target.
-        //    var step = _speed * Time.deltaTime; // calculate distance to move
-        //    transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, step);
-        //}
+
+        transform.position += _avoidanceDirection * (_speed * 1.5f)* Time.deltaTime;
+
+        if (Vector2.Distance(_target.transform.position, transform.position) > 0.001f)
+        {
+            transform.position -= (transform.position - _target.transform.position).normalized * _speed * Time.deltaTime;
+
+
+            // Move our position a step closer to the target.
+            //var step = _speed * Time.deltaTime; // calculate distance to move
+            //transform.position = Vector3.MoveTowards(transform.position - _avoidanceDirection, _target.transform.position, step);
+        }
     }
 
 
