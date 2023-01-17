@@ -38,7 +38,9 @@ public class PlayerController : MonoBehaviour
         _nextFireTime = Time.time + _fireRate;
 
         // compute direction of projectile
-        var nearest = ComputeProjectileDirection(1f);
+        var nearest = GetNearestEnemy(1f);
+
+        // compute direction
         _movementDirection = (nearest.position - transform.position);
 
         // cast ray for enemy hit
@@ -72,19 +74,28 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private Transform ComputeProjectileDirection(float radius)
+    /// <summary>
+    /// Get nearest enemy base on radius
+    /// </summary>
+    /// <param name="radius"></param>
+    /// <returns></returns>
+    private Transform GetNearestEnemy(float radius)
     {
         var rad = radius;
         // Get all enemies inside OverlapCircleAll  and return the nearest
         Transform  nearest;
         float tempDistance = 0;
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius, _enemyLayer);
+
         if (colliders.Length > 0)
         {
+            // set first collider as the nearest
             nearest = colliders[0].transform;
             tempDistance = Vector3.Distance(nearest.position, transform.position);
+
             foreach (Collider2D item in colliders)
             {
+                // check if distance is smaller than stored one
                 var dist = Vector3.Distance(nearest.position, transform.position);
                 if (dist < tempDistance)
                 {
@@ -92,6 +103,7 @@ public class PlayerController : MonoBehaviour
                     tempDistance = dist;
                 }
             }
+            // return enemy
             Debug.Log("Nearest enemy is " + nearest.name);
             return nearest;
         }
