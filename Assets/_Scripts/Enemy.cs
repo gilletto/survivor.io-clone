@@ -6,22 +6,26 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public static int Enemycount = 0;
-  
+    
     [SerializeField] float _speed = 1.0f;
     [SerializeField] float _health = 1.0f;
+    [SerializeField] Transform _gemPrefab;
     private GameObject _target;
     private Rigidbody2D _rb2d;
+
+
 
     /// <summary>
     /// Init method
     /// </summary>
     /// <param name="player"></param>
-    public void Setup(GameObject player)
+    public void Setup(GameObject player, Transform gem)
     {
         //keep trace of enemy number
         Enemycount += 1;
         _target = player;
         _rb2d = GetComponent<Rigidbody2D>();
+        _gemPrefab = gem;
 
     }
 
@@ -35,6 +39,18 @@ public class Enemy : MonoBehaviour
         if (_health <= 0)
         {
             Die();
+
+            // TODO: change with event delegation
+
+            // Change enemy statistics
+            GameManager.Instance.IncreaseEnemyKill();
+
+            // Gain experience
+            GameManager.Instance.IncreaseExperience(5);
+
+            //Drop gem or reward
+            Instantiate(_gemPrefab, transform.position, Quaternion.identity);
+            
             return;
         }
     }
