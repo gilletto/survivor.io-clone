@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8129365901016158517}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,9 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 1.5
   _health: 1
-  _stamina: 1
-  _defence: 0
   _projectilePrefab: {fileID: 1632998169388651156, guid: 59219b13276bb974585825b6bbe0bc0a, type: 3}
+  _fireRate: 3
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 64

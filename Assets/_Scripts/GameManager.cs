@@ -5,18 +5,34 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 
-    [SerializeField] private float _coin;
-    [SerializeField] private int _wave;
-    [SerializeField] private float _timePassed;
+    public static GameManager Instance;
+
+    [SerializeField]  int _enemyKill;
+    [SerializeField]  int _exp;
+    [SerializeField] int _gems;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        
+        _enemyKill = 0;
+        _exp = 0;
+        _gems = 0;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void IncreaseExperience(int amount)
     {
-        
+        _exp += amount;
+    }
+    public void IncreaseGem() 
+    {
+        _gems++;
+    }
+    public void IncreaseEnemyKill()
+    {
+        _enemyKill++;
     }
 }
