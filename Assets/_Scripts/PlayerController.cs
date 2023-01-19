@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             rad++;
-            return ComputeProjectileDirection(rad);
+            return GetNearestEnemy(rad);
         }
         return null;
     }
