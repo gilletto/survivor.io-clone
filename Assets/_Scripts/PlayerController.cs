@@ -12,7 +12,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _fireRate = 3f;
     [SerializeField] private LayerMask _enemyLayer;
     private Vector3 _movementDirection;
+    private Vector3 _movement;
     private float _nextFireTime = 3f;
+    private Rigidbody2D _rb2d;
 
 
     private float _horizontal;
@@ -20,7 +22,16 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-      
+        _rb2d = GetComponent<Rigidbody2D>();
+        Setup();
+    }
+
+    public void Setup()
+    {
+        _health = UnityEngine.Random.Range(25, 50);
+        _speed = UnityEngine.Random.Range(5, 6);
+        _fireRate = UnityEngine.Random.Range(2, 3);
+        _nextFireTime = _fireRate;
     }
 
     // Update is called once per frame
@@ -44,7 +55,7 @@ public class PlayerController : MonoBehaviour
         _movementDirection = (nearest.position - transform.position);
 
         // cast ray for enemy hit
-        RaycastHit2D raycasthit = Physics2D.Raycast(transform.position + _movementDirection.normalized, _movementDirection.normalized, 100f, _enemyLayer);
+        RaycastHit2D raycasthit = Physics2D.Raycast(transform.position + _movementDirection.normalized, _movementDirection.normalized, 5f, _enemyLayer);
         
         // if we hit enemy
         if (raycasthit.collider != null)
@@ -63,14 +74,14 @@ public class PlayerController : MonoBehaviour
             // setup projectile variables(direction and speed)
             projectile_script.Setup(_movementDirection.normalized, 20.0f);
         }
-        else
-        {
-            GameObject projectile = Instantiate(_projectilePrefab, transform.position + _movementDirection.normalized, Quaternion.identity);
-            Projectile projectile_script = projectile.GetComponent<Projectile>();
+        //else
+        //{
+        //    GameObject projectile = Instantiate(_projectilePrefab, transform.position + _movementDirection.normalized, Quaternion.identity);
+        //    Projectile projectile_script = projectile.GetComponent<Projectile>();
 
-            // setup variables
-            projectile_script.Setup(_movementDirection.normalized, 20.0f);
-        }
+        //    // setup variables
+        //    projectile_script.Setup(_movementDirection.normalized, 20.0f);
+        //}
 
     }
 
@@ -121,8 +132,8 @@ public class PlayerController : MonoBehaviour
         _horizontal = Input.GetAxis("Horizontal");
         _vertical = Input.GetAxis("Vertical");
 
-        // set movement direction
-        Vector2 movement = new Vector3(_horizontal, _vertical, 0);
+        // set movement normalized for diagonal movement
+        _movement = new Vector3(_horizontal, _vertical, 0).normalized;
 
 
         // invert direction based on input
@@ -135,7 +146,52 @@ public class PlayerController : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        // move player
-        transform.Translate(movement * _speed * Time.deltaTime);
+        
+    }
+    public void TakeDamage(float amount)
+    {
+        _health -= amount;
+        if (_health <= 0)
+        {
+            Die();
+            return;
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("game over");
+        GameManager.Instance.GameOver();
+    }
+
+    private void ApplyMovement()
+    {
+        _rb2d.velocity = _movement * _speed;
+    }
+
+    private void FixedUpdate()
+    {
+        ApplyMovement();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("collided with"  + collision.gameObject.name);
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage(1);
+          
+        }
+        
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage(0.5f);
+
+        }
     }
 }
