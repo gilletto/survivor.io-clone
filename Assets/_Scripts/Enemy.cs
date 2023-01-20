@@ -26,6 +26,8 @@ public class Enemy : MonoBehaviour
         _target = player;
         _rb2d = GetComponent<Rigidbody2D>();
         _gemPrefab = gem;
+        _health = UnityEngine.Random.Range(10, 15);
+        _speed = 1.3f;
 
     }
 
@@ -62,7 +64,10 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         Enemycount--;
-        //drop exp gems
+
+        //TODO change : call event in EnemyManager
+        GameManager.Instance.EnemyKilled(this);
+
         Destroy(gameObject);
     }
 
