@@ -1,50 +1,81 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-
+    public static int Enemycount = 0;
+    
     [SerializeField] float _speed = 1.0f;
     [SerializeField] float _health = 1.0f;
+    [SerializeField] Transform _gemPrefab;
     private GameObject _target;
+    private Rigidbody2D _rb2d;
 
-    // Start is called before the first frame update
 
-    private void Awake()
+
+    /// <summary>
+    /// Init method
+    /// </summary>
+    /// <param name="player"></param>
+    public void Setup(GameObject player, Transform gem)
     {
-        _target = GameObject.FindGameObjectWithTag("Player");
-    }
-    void Start()
-    {
-        _target = GameObject.FindGameObjectWithTag("Player");
+        //keep trace of enemy number
+        Enemycount += 1;
+        _target = player;
+        _rb2d = GetComponent<Rigidbody2D>();
+        _gemPrefab = gem;
+        _health = UnityEngine.Random.Range(10, 15);
+        _speed = 1.3f;
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(Vector2.Distance(_target.transform.position, transform.position) > 0.001f)
-        {
-            // Move our position a step closer to the target.
-            var step = _speed * Time.deltaTime; // calculate distance to move
-            transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, step);
-        }
     }
 
+    /// <summary>
+    /// Simple damage method
+    /// </summary>
+    /// <param name="amount"></param>
     public void TakeDamage(float amount)
     {
-        Debug.Log("Take damage");
-        if(_health <= 0)
+        _health -= amount;
+        if (_health <= 0)
         {
             Die();
+
+            // TODO: change with event delegation
+
+            // Change enemy statistics
+            GameManager.Instance.IncreaseEnemyKill();
+
+            // Gain experience
+            GameManager.Instance.IncreaseExperience(5);
+
+            //Drop gem or reward
+            Instantiate(_gemPrefab, transform.position, Quaternion.identity);
+            
             return;
         }
-        _health -= amount;
     }
 
+
+    /// <summary>
+    /// Destroy object
+    /// </summary>
     private void Die()
     {
+        Enemycount--;
+
+        //TODO change : call event in EnemyManager
+        GameManager.Instance.EnemyKilled(this);
+
         Destroy(gameObject);
     }
+
+
+    private void FixedUpdate()
+    {
+        Vector2 newPosition = Vector2.MoveTowards(transform.position, _target.transform.position, Time.deltaTime * _speed);
+        _rb2d.MovePosition(newPosition);
+    }
+
 }

@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,42 +8,44 @@ public class EnemyManager : MonoBehaviour
 {
 
     [SerializeField] float _spawnRate = 5.0f;
-    [SerializeField] GameObject _simpleEnemyPrefab;
-    [SerializeField] float _distanceFromPlayer;
-    [SerializeField] float _totalEnemiesPerWave;
+    [SerializeField] Enemy _simpleEnemyPrefab;
     [SerializeField] GameObject _player;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
+    [SerializeField] Transform _gemPrefab;
+    List<Enemy> _enemies = new List<Enemy>();
+   
     // Update is called once per frame
     void Update()
     {
-        
-        //SpawnWave();
-        // compute number of enemies to spawn
-
-        // align enemies
-
-        // compute random position
-
-        // instantiate simple enemies away from player
-
-        SpawnEnemy();
-
+        // spawn a fixed number of enemy
+        if (Enemy.Enemycount < 10)
+        {
+            SpawnEnemy();
+        }
     }
 
-    private void SpawnWave()
-    {
-       
-    }
 
     private void SpawnEnemy()
     {
-        Vector3 desiredPos =  Random.insideUnitCircle * 40;
-        Instantiate(_simpleEnemyPrefab, _player.transform.position * Random.insideUnitCircle * 40, Quaternion.identity);
+        Vector3 desiredPos = UnityEngine.Random.insideUnitCircle * 10;
+        Enemy enemy = Instantiate(_simpleEnemyPrefab, _player.transform.position +  desiredPos, Quaternion.identity);
+        enemy.name = "Enemy" + Enemy.Enemycount;
+        enemy.Setup(_player, _gemPrefab);
+        _enemies.Add(enemy);
         
+    }
+
+    public void RemoveEnemy(Enemy enemy)
+    {
+        _enemies.Remove(enemy);
+    }
+
+    public void DisposeAll()
+    {
+        foreach(Enemy enem in _enemies)
+        {
+            Destroy(enem.gameObject);
+        }
+        Enemy.Enemycount = 0;
+        _enemies.Clear();
     }
 }
