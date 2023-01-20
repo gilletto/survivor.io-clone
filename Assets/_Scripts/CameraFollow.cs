@@ -8,18 +8,7 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] Transform _player;
     [SerializeField] Vector3 _offset;
     [SerializeField] float _smoothSpeed = 0.125f;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+  
     private void LateUpdate()
     {
         Vector3 desiredPosition = _player.position + _offset;
