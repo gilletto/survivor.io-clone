@@ -16,8 +16,9 @@ public class EnemyManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // TODO: change with a couroutine
         // spawn a fixed number of enemy
-        if (Enemy.Enemycount < 10)
+        if (Enemy.Enemycount < 20)
         {
             SpawnEnemy();
         }
@@ -26,7 +27,7 @@ public class EnemyManager : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        Vector3 desiredPos = UnityEngine.Random.insideUnitCircle * 10;
+        Vector3 desiredPos = UnityEngine.Random.insideUnitCircle * 40;
         Enemy enemy = Instantiate(_simpleEnemyPrefab, _player.transform.position +  desiredPos, Quaternion.identity);
         enemy.name = "Enemy" + Enemy.Enemycount;
         enemy.Setup(_player, _gemPrefab);

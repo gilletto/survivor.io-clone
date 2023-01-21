@@ -7,14 +7,16 @@ public class PlayerController : MonoBehaviour
 {
 
     [SerializeField] private float _speed = 5.0f;
-    [SerializeField] private float _health = 1f;
+    [SerializeField] private int _health = 1;
     [SerializeField] private GameObject _projectilePrefab;
     [SerializeField] private float _fireRate = 3f;
     [SerializeField] private LayerMask _enemyLayer;
+    [SerializeField] HealthBar _healthBar;
     private Vector3 _movementDirection;
     private Vector3 _movement;
     private float _nextFireTime = 3f;
     private Rigidbody2D _rb2d;
+    
 
 
     private float _horizontal;
@@ -29,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public void Setup()
     {
         _health = UnityEngine.Random.Range(25, 50);
+        _healthBar.SetMaxHealth(_health);
         _speed = UnityEngine.Random.Range(5, 6);
         _fireRate = UnityEngine.Random.Range(2, 3);
         _nextFireTime = _fireRate;
@@ -140,17 +143,20 @@ public class PlayerController : MonoBehaviour
         if (_horizontal > 0)
         {
             transform.localScale = new Vector3(-1f, 1, 1);
+            _healthBar.gameObject.transform.localScale = new Vector3(-0.01f, 0.01f, 0.01f);
         }
         else if (_horizontal < 0)
         {
             transform.localScale = new Vector3(1, 1, 1);
+            _healthBar.gameObject.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
         }
 
         
     }
-    public void TakeDamage(float amount)
+    public void TakeDamage(int amount)
     {
         _health -= amount;
+        _healthBar.SetHealth(_health);
         if (_health <= 0)
         {
             Die();
@@ -180,7 +186,7 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            TakeDamage(1);
+            TakeDamage(2);
           
         }
         
@@ -188,10 +194,17 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+
+        // take damage over time
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            TakeDamage(0.5f);
+            TakeDamage(1);
 
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, 30);
     }
 }
